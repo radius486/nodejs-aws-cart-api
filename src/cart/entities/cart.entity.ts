@@ -11,9 +11,6 @@ import { CartItemEntity } from './cart-item.entity';
 
 @Entity('carts')
 export class CartEntity {
-  @OneToMany(() => CartItemEntity, (cartItem) => cartItem.cart_id, {
-    cascade: true,
-  })
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -21,11 +18,16 @@ export class CartEntity {
   user_id: string;
 
   @CreateDateColumn()
-  created_at: number;
+  created_at: Date;
 
   @UpdateDateColumn()
-  updated_at: number;
+  updated_at: Date;
 
   @Column({ type: 'enum', enum: CartStatuses, default: CartStatuses.OPEN })
   status: CartStatuses;
+
+  @OneToMany(() => CartItemEntity, (cartItem) => cartItem.cart_id, {
+    cascade: true,
+  })
+  items: CartItemEntity[];
 }
