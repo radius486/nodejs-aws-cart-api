@@ -1,3 +1,4 @@
+import { IsNumber, IsObject } from 'class-validator';
 export enum OrderStatus {
   Open = 'OPEN',
   Approved = 'APPROVED',
@@ -29,10 +30,19 @@ export type CreateOrderDto = {
   };
 };
 
-export type PutCartPayload = {
-  product: { description: string; id: string; title: string; price: number };
+export class PutCartPayload {
+  @IsObject()
+  product: {
+    description: string;
+    id: string;
+    title: string;
+    price: number;
+  };
+
+  @IsNumber()
   count: number;
-};
+}
+
 export type CreateOrderPayload = {
   userId: string;
   cartId: string;

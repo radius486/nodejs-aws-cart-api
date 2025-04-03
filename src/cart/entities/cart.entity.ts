@@ -28,6 +28,8 @@ export class CartEntity {
 
   @OneToMany(() => CartItemEntity, (cartItem) => cartItem.cart_id, {
     cascade: true,
+    onDelete: 'CASCADE',
+    // eager: true,
   })
   items: CartItemEntity[];
 }
