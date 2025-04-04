@@ -2,10 +2,11 @@ import { DataSource } from 'typeorm';
 import { databaseConfig } from './database';
 import { CartEntity } from '../cart/entities/cart.entity';
 import { CartItemEntity } from '../cart/entities/cart-item.entity';
+import { OrderEntity } from '../cart/entities/order.entity';
 
 export const AppDataSource = new DataSource({
   ...databaseConfig,
-  entities: [CartEntity, CartItemEntity],
+  entities: [CartEntity, CartItemEntity, OrderEntity],
 });
 
 export async function createConnection(): Promise<DataSource> {

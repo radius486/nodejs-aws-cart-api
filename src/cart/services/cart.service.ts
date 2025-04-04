@@ -36,7 +36,6 @@ export class CartService {
       created_at: new Date(),
       updated_at: new Date(),
       status: CartStatuses.OPEN,
-      items: [],
     };
 
     const cart = await this.cartRepository.save(userCart);

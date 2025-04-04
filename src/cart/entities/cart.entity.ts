@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { CartStatuses } from '../models';
 import { CartItemEntity } from './cart-item.entity';
+import { OrderEntity } from './order.entity';
 
 @Entity('carts')
 export class CartEntity {
@@ -31,5 +32,11 @@ export class CartEntity {
     onDelete: 'CASCADE',
     // eager: true,
   })
-  items: CartItemEntity[];
+  items?: CartItemEntity[];
+
+  @OneToMany(() => OrderEntity, (order) => order.cart_id, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  orders?: OrderEntity[];
 }

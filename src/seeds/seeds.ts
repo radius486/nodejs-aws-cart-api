@@ -10,7 +10,6 @@ export const cartSeeds: CartEntity[] = [
     created_at: new Date(),
     updated_at: new Date(),
     status: CartStatuses.OPEN,
-    items: [],
   },
   {
     id: 'd735c339-0930-42b6-8dbc-72db88ebed41',
@@ -18,7 +17,6 @@ export const cartSeeds: CartEntity[] = [
     created_at: new Date(),
     updated_at: new Date(),
     status: CartStatuses.STATUS,
-    items: [],
   },
 ];
 
