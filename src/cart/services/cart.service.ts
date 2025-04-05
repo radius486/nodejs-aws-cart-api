@@ -63,17 +63,24 @@ export class CartService {
       ({ product_id }) => product_id === payload.product.id,
     );
 
+    console.log('index', index);
     if (index === -1) {
       const newItem: CartItemEntity = {
-        id: randomUUID(),
         cart_id: userCart.id,
         product_id: payload.product.id,
         count: payload.count,
       };
 
+      if (!newItem.count) {
+        return userCart;
+      }
+
       await this.cartItemRepository.save(newItem);
     } else if (payload.count === 0) {
-      await this.cartItemRepository.delete(userCart.items[index].id);
+      await this.cartItemRepository.delete({
+        cart_id: userCart.items[index].cart_id,
+        product_id: userCart.items[index].product_id,
+      });
     } else {
       const updatedItem: CartItemEntity = {
         ...userCart.items[index],
@@ -81,7 +88,10 @@ export class CartService {
       };
 
       await this.cartItemRepository.update(
-        userCart.items[index].id,
+        {
+          cart_id: userCart.items[index].cart_id,
+          product_id: userCart.items[index].product_id,
+        },
         updatedItem,
       );
     }
