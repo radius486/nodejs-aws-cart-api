@@ -1,6 +1,14 @@
-export interface User {
+import { IsEmail, MaxLength, IsNotEmpty } from 'class-validator';
+
+export class User {
   id?: string;
-  name: string;
-  email?: string;
+
+  @MaxLength(255)
+  @IsEmail()
+  @IsNotEmpty({ message: 'Email required' })
+  email: string;
+
+  @IsNotEmpty({ message: 'Password required' })
+  @MaxLength(255)
   password: string;
 }
