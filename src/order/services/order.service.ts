@@ -63,8 +63,6 @@ export class OrderService {
     //   // ],
     // };
 
-    console.log('order', order);
-
     return await this.orderRepository.save(order);
   }
 

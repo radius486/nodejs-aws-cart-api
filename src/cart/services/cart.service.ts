@@ -20,7 +20,7 @@ export class CartService {
 
   async findByUserId(userId: string): Promise<CartEntity> {
     const cart = await this.cartRepository.findOne({
-      where: { user_id: userId },
+      where: { user_id: userId, status: CartStatuses.OPEN },
       relations: {
         items: true,
       },
@@ -38,7 +38,14 @@ export class CartService {
       status: CartStatuses.OPEN,
     };
 
-    const cart = await this.cartRepository.save(userCart);
+    await this.cartRepository.save(userCart);
+
+    const cart = this.cartRepository.findOne({
+      where: { id: userCart.id },
+      relations: {
+        items: true,
+      },
+    });
 
     return cart;
   }
@@ -50,7 +57,7 @@ export class CartService {
       return userCart;
     }
 
-    return this.createByUserId(userId);
+    return await this.createByUserId(userId);
   }
 
   async updateByUserId(
@@ -98,7 +105,14 @@ export class CartService {
     return await this.findOrCreateByUserId(userId);
   }
 
-  removeByUserId(userId): void {
-    this.cartRepository.delete({ user_id: userId });
+  async removeByUserId(userId): Promise<void> {
+    await this.cartRepository.delete({ user_id: userId });
+  }
+
+  async setCartAsOrdered(cart_id: string): Promise<void> {
+    await this.cartRepository.update(
+      { id: cart_id },
+      { status: CartStatuses.ORDERED },
+    );
   }
 }

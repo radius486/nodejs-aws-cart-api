@@ -34,7 +34,7 @@ export const cartSeeds: CartEntity[] = [
     user_id: 'dc4d374e-1f3a-4898-aab4-4d1697bef4e8',
     created_at: new Date(),
     updated_at: new Date(),
-    status: CartStatuses.STATUS,
+    status: CartStatuses.ORDERED,
   },
 ];
 

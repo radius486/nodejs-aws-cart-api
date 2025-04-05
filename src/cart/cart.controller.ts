@@ -56,8 +56,8 @@ export class CartController {
   @UseGuards(BasicAuthGuard)
   @Delete()
   @HttpCode(HttpStatus.OK)
-  clearUserCart(@Req() req: AppRequest) {
-    this.cartService.removeByUserId(getUserIdFromRequest(req));
+  async clearUserCart(@Req() req: AppRequest) {
+    await this.cartService.removeByUserId(getUserIdFromRequest(req));
   }
 
   // @UseGuards(JwtAuthGuard)
@@ -84,7 +84,7 @@ export class CartController {
       total,
     });
 
-    this.cartService.removeByUserId(userId);
+    await this.cartService.setCartAsOrdered(cartId);
 
     return {
       order,
