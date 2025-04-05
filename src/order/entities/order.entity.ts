@@ -1,12 +1,14 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { CartEntity } from '../../cart/entities/cart.entity';
-import { CartStatuses } from '../../cart/models';
+import { OrderStatus } from '../type';
 import { UserEntity } from '../../users/entities/user.entity';
 
 @Entity('orders')
@@ -29,11 +31,26 @@ export class OrderEntity {
   @Column('text')
   comments: string;
 
-  @Column({ type: 'enum', enum: CartStatuses, default: CartStatuses.OPEN })
-  status: CartStatuses;
+  @Column('jsonb')
+  items: Array<{ productId: string; count: number }>;
+
+  @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.Open })
+  status: OrderStatus;
 
   @Column('numeric')
   total: number;
+
+  @CreateDateColumn({
+    name: 'created_at',
+    type: 'timestamp',
+  })
+  createdAt: Date;
+
+  @UpdateDateColumn({
+    name: 'updated_at',
+    type: 'timestamp',
+  })
+  updatedAt: Date;
 
   @ManyToOne(() => CartEntity, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'cart_id' })

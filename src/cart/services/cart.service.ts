@@ -63,7 +63,6 @@ export class CartService {
       ({ product_id }) => product_id === payload.product.id,
     );
 
-    console.log('index', index);
     if (index === -1) {
       const newItem: CartItemEntity = {
         cart_id: userCart.id,

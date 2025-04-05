@@ -1,50 +1,82 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
-import { Order } from '../models';
 import { CreateOrderPayload, OrderStatus } from '../type';
+import { InjectRepository } from '@nestjs/typeorm';
+import { OrderEntity } from '../entities/order.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class OrderService {
-  private orders: Record<string, Order> = {};
+  constructor(
+    @InjectRepository(OrderEntity)
+    private readonly orderRepository: Repository<OrderEntity>,
+  ) {}
 
-  getAll() {
-    return Object.values(this.orders);
+  private orders: Record<string, OrderEntity> = {};
+
+  async getAll() {
+    return await this.orderRepository.find();
   }
 
-  findById(orderId: string): Order {
-    return this.orders[orderId];
+  async findById(orderId: string): Promise<OrderEntity> {
+    return await this.orderRepository.findOneBy({ id: orderId });
   }
 
-  create(data: CreateOrderPayload) {
-    const id = randomUUID() as string;
-    const order: Order = {
-      id,
-      ...data,
-      statusHistory: [
-        {
-          comment: '',
-          status: OrderStatus.Open,
-          timestamp: Date.now(),
-        },
-      ],
-    };
-
-    this.orders[id] = order;
-
-    return order;
-  }
-
-  // TODO add  type
-  update(orderId: string, data: Order) {
-    const order = this.findById(orderId);
-
-    if (!order) {
-      throw new Error('Order does not exist.');
+  async create(data: CreateOrderPayload) {
+    if (!data.cartId) {
+      throw new BadRequestException('Cart ID is required');
     }
 
-    this.orders[orderId] = {
-      ...data,
-      id: orderId,
+    if (!data.userId) {
+      throw new BadRequestException('User ID is required');
+    }
+
+    const id = randomUUID() as string;
+
+    const order: OrderEntity = {
+      id,
+      user_id: data.userId,
+      cart_id: data.cartId,
+      total: data.total,
+      status: OrderStatus.Open,
+      comments: 'No comments',
+      delivery: '',
+      payment: '',
+      items: data.items,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
+
+    // const order: OrderEntity = {
+    //   id,
+    //   ...data,
+    //   // statusHistory: [
+    //   //   {
+    //   //     comment: '',
+    //   //     status: OrderStatus.Open,
+    //   //     timestamp: Date.now(),
+    //   //   },
+    //   // ],
+    // };
+
+    console.log('order', order);
+
+    return await this.orderRepository.save(order);
+  }
+
+  async update(orderId: string, data: OrderEntity): Promise<OrderEntity> {
+    const order = await this.findById(orderId);
+
+    if (!order) {
+      throw new NotFoundException('Order does not exist.');
+    }
+
+    Object.assign(order, data);
+
+    return await this.orderRepository.save(order);
   }
 }
