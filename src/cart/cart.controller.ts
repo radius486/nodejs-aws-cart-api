@@ -10,14 +10,17 @@ import {
   HttpCode,
   BadRequestException,
 } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
 import { BasicAuthGuard } from '../auth';
 import { OrderService } from '../order';
 import { AppRequest, getUserIdFromRequest } from '../shared';
 import { calculateCartTotal } from './models-rules';
 import { CartService } from './services';
-import { CreateOrderDto, PutCartPayload } from 'src/order/type';
+import { OrderStatus, PutCartPayload } from '../order/type';
 import { CartItemEntity } from './entities/cart-item.entity';
 import { OrderEntity } from '../order/entities/order.entity';
+import { CartEntity } from './entities/cart.entity';
+import { CartStatuses } from './models';
 
 @Controller('api/profile/cart')
 export class CartController {
@@ -63,32 +66,53 @@ export class CartController {
   // @UseGuards(JwtAuthGuard)
   @UseGuards(BasicAuthGuard)
   @Put('order')
-  async checkout(@Req() req: AppRequest, @Body() body: CreateOrderDto) {
+  async checkout(@Req() req: AppRequest) {
     const userId = getUserIdFromRequest(req);
-    const cart = await this.cartService.findByUserId(userId);
 
-    if (!(cart && cart.items.length)) {
-      throw new BadRequestException('Cart is empty');
-    }
+    // Use TypeORM's transaction to ensure all operations succeed or none do
+    return await this.cartService.dataSource.transaction(
+      async (transactionalEntityManager) => {
+        // Get cart with transaction
+        const cart = await transactionalEntityManager
+          .getRepository(CartEntity)
+          .findOne({
+            where: { user_id: userId, status: CartStatuses.OPEN },
+            relations: ['items'],
+          });
 
-    const { id: cartId, items } = cart;
-    const total = calculateCartTotal(items);
-    const order = await this.orderService.create({
-      userId,
-      cartId,
-      items: items.map(({ count, product_id }) => ({
-        productId: product_id,
-        count,
-      })),
-      address: body.address,
-      total,
-    });
+        if (!(cart && cart.items.length)) {
+          throw new BadRequestException('Cart is empty');
+        }
 
-    await this.cartService.setCartAsOrdered(cartId);
+        const { id: cartId, items } = cart;
+        const total = calculateCartTotal(items);
 
-    return {
-      order,
-    };
+        // Create order within transaction
+        const order = await transactionalEntityManager
+          .getRepository(OrderEntity)
+          .save({
+            id: randomUUID(),
+            user_id: userId,
+            cart_id: cartId,
+            total,
+            status: OrderStatus.Open,
+            comments: 'No comments',
+            delivery: '',
+            payment: '',
+            items,
+            created_at: new Date(),
+            updated_at: new Date(),
+          });
+
+        // Update cart status within same transaction
+        await transactionalEntityManager.getRepository(CartEntity).update(
+          { id: cartId },
+          { status: CartStatuses.ORDERED }, // update data
+        );
+
+        return { order };
+      },
+    );
   }
 
   @UseGuards(BasicAuthGuard)

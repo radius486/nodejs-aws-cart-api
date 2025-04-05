@@ -2,14 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { CartStatuses } from '../models';
 import { PutCartPayload } from 'src/order/type';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { CartEntity } from '../entities/cart.entity';
 import { CartItemEntity } from '../entities/cart-item.entity';
 
 @Injectable()
 export class CartService {
   constructor(
+    @InjectDataSource()
+    public dataSource: DataSource,
     @InjectRepository(CartEntity)
     private readonly cartRepository: Repository<CartEntity>,
     @InjectRepository(CartItemEntity)

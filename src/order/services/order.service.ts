@@ -47,8 +47,8 @@ export class OrderService {
       delivery: '',
       payment: '',
       items: data.items,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      created_at: new Date(),
+      updated_at: new Date(),
     };
 
     // const order: OrderEntity = {
