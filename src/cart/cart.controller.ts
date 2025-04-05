@@ -85,7 +85,7 @@ export class CartController {
         }
 
         const { id: cartId, items } = cart;
-        const total = calculateCartTotal(items);
+        const total = await calculateCartTotal(items);
 
         // Create order within transaction
         const order = await transactionalEntityManager
