@@ -2,7 +2,9 @@ import { CartItemEntity } from '../entities/cart-item.entity';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-const PRODUCT_ENDPOINT = process.env.PRODUCT_ENDPOINT;
+const PRODUCT_ENDPOINT =
+  process.env.PRODUCT_ENDPOINT ||
+  'https://hq21lip4pj.execute-api.eu-west-1.amazonaws.com/prod/products/';
 
 export async function calculateCartTotal(
   items: CartItemEntity[],

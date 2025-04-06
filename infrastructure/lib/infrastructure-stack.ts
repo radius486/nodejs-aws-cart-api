@@ -3,6 +3,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as path from 'path';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -25,7 +26,18 @@ export class ApiStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // Lambda Function
+    // Get reference to existing VPC
+    const vpc = ec2.Vpc.fromLookup(this, 'ExistingVPC', {
+      vpcId: 'vpc-063222ae6b4704e12',
+    });
+
+    // Get reference to existing security group
+    const existingSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(
+      this,
+      'ExistingSecurityGroup',
+      'sg-097061c324ba2cec0',
+    );
+
     const handler = new lambda.Function(this, 'NestJsHandler', {
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'lambda.handler',
@@ -40,8 +52,19 @@ export class ApiStack extends cdk.Stack {
           user: 'root',
         },
       }),
+      // Add VPC configuration
+      vpc,
+      vpcSubnets: {
+        subnets: [
+          ec2.Subnet.fromSubnetId(this, 'Subnet1', 'subnet-09b3732269394a19b'),
+          ec2.Subnet.fromSubnetId(this, 'Subnet2', 'subnet-07dc415d97eada0e1'),
+          ec2.Subnet.fromSubnetId(this, 'Subnet3', 'subnet-052b2af593d06f70f'),
+        ],
+      },
+      securityGroups: [existingSecurityGroup],
       timeout: cdk.Duration.seconds(30),
       memorySize: 256,
+      allowPublicSubnet: true,
       environment: {
         NODE_ENV: 'production',
         POSTGRES_HOST,
