@@ -5,7 +5,6 @@ import helmet from 'helmet';
 
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-import cors from 'cors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,7 +13,9 @@ async function bootstrap() {
 
   const port = configService.get('APP_PORT') || 4000;
 
-  app.use(cors());
+  app.enableCors({
+    origin: (req, callback) => callback(null, true),
+  });
   app.use(helmet());
   app.useGlobalPipes(new ValidationPipe({}));
 
