@@ -7,20 +7,13 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-const POSTGRES_HOST =
-  process.env.POSTGRES_HOST ||
-  'nodejs-aws.clqoegiss1r3.eu-west-1.rds.amazonaws.com';
+const POSTGRES_HOST = process.env.POSTGRES_HOST || '';
 const POSTGRES_PORT = process.env.POSTGRES_PORT || '5432';
 const POSTGRES_USER = process.env.POSTGRES_USER || 'postgres';
-const POSTGRES_PASSWORD =
-  process.env.POSTGRES_PASSWORD || 'fefvyw-kyghuc-wahMu5';
+const POSTGRES_PASSWORD = process.env.POSTGRES_PASSWORD || '';
 const POSTGRES_DB = process.env.POSTGRES_DB || 'postgres';
 const DB_REGION = process.env.DB_REGION || 'eu-west-1';
-const DB_ARN =
-  process.env.DB_ARN || 'arn:aws:rds:eu-west-1:248189938737:db:nodejs-aws';
-const PRODUCT_ENDPOINT =
-  process.env.PRODUCT_ENDPOINT ||
-  'https://hq21lip4pj.execute-api.eu-west-1.amazonaws.com/prod/products/';
+const DB_ARN = process.env.DB_ARN || '';
 
 export class ApiStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
@@ -73,7 +66,6 @@ export class ApiStack extends cdk.Stack {
         POSTGRES_PASSWORD,
         POSTGRES_DB,
         DB_REGION,
-        PRODUCT_ENDPOINT,
       },
     });
 
