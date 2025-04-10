@@ -1,9 +1,16 @@
-import { CartItem } from '../models';
+import { CartItemEntity } from '../entities/cart-item.entity';
 
-export function calculateCartTotal(items: CartItem[]): number {
-  return items.length
-    ? items.reduce((acc: number, { product: { price }, count }: CartItem) => {
-        return (acc += price * count);
-      }, 0)
-    : 0;
+export async function calculateCartTotal(
+  items: CartItemEntity[],
+): Promise<number> {
+  try {
+    if (!items.length) return 0;
+
+    return items.reduce((total: number, item: CartItemEntity) => {
+      return total + 100 * item.count;
+    }, 0);
+  } catch (error) {
+    console.error('Failed to fetch:', error);
+    throw error;
+  }
 }

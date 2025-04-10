@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 
 import helmet from 'helmet';
 
@@ -16,6 +17,7 @@ async function bootstrap() {
     origin: (req, callback) => callback(null, true),
   });
   app.use(helmet());
+  app.useGlobalPipes(new ValidationPipe({}));
 
   await app.listen(port, () => {
     console.log('App is running on %s port', port);
