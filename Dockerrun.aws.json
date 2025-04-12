@@ -1,7 +1,7 @@
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "nodejs-aws-cart-api",
+    "Name": "radius486-cart-api",
     "Update": "true"
   },
   "Ports": [

@@ -1,6 +1,9 @@
+# exclude not needed dependencies
 node_modules
+
+# exclude not deeded lambda infrastructure
 infrastructure
-test
+
 .gitignore
 .git
 .prettierrc
@@ -8,11 +11,10 @@ Dockerfile*
 docker-compose.yml
 README.md
 
-# compiled output
+# Exclude compiled output
 /dist
-/node_modules
 
-# Logs
+# Exclude Logs
 logs
 *.log
 npm-debug.log*
@@ -20,14 +22,15 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-# OS
+# Exclude OS files
 .DS_Store
 
-# Tests
+# Exclude test files
 /coverage
 /.nyc_output
+test
 
-# IDEs and editors
+# Exclude IDEs and editors
 /.idea
 .project
 .classpath
@@ -35,19 +38,19 @@ lerna-debug.log*
 *.launch
 .settings/
 *.sublime-workspace
-
-# IDE - VSCode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 .ebignore
 
+# Exclude environment files
 .env
 *.env
 env.example
