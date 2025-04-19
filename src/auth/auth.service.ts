@@ -37,7 +37,20 @@ export class AuthService {
     return await this.usersService.createOne({ email, password });
   }
 
-  login(user: User, type: 'jwt' | 'basic' | 'default'): TokenResponse {
+  async login(
+    payload: User,
+    type: 'jwt' | 'basic' | 'default',
+  ): Promise<TokenResponse> {
+    const user = await this.usersService.findOne(payload.email);
+
+    if (!user) {
+      throw new BadRequestException('User does not exist');
+    }
+
+    if (user.password !== payload.password) {
+      throw new BadRequestException('Invalid credentials');
+    }
+
     const LOGIN_MAP = {
       jwt: this.loginJWT,
       basic: this.loginBasic,
@@ -45,7 +58,7 @@ export class AuthService {
     };
     const login = LOGIN_MAP[type];
 
-    return login ? login(user) : LOGIN_MAP.default(user);
+    return login ? login(payload) : LOGIN_MAP.default(payload);
   }
 
   loginJWT(user: User) {

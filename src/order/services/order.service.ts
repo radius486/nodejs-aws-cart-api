@@ -18,8 +18,10 @@ export class OrderService {
 
   private orders: Record<string, OrderEntity> = {};
 
-  async getAll() {
-    return await this.orderRepository.find();
+  async getAll(userId: string) {
+    return await this.orderRepository.find({
+      where: { user_id: userId },
+    });
   }
 
   async findById(orderId: string): Promise<OrderEntity> {
@@ -76,5 +78,17 @@ export class OrderService {
     Object.assign(order, data);
 
     return await this.orderRepository.save(order);
+  }
+
+  async deleteOrder(orderId: string): Promise<string> {
+    const order = await this.findById(orderId);
+
+    if (!order) {
+      throw new NotFoundException('Order does not exist.');
+    }
+
+    const deletedOrder = await this.orderRepository.delete(orderId);
+
+    return deletedOrder ? orderId : '0';
   }
 }

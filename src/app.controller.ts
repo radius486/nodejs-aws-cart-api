@@ -36,12 +36,12 @@ export class AppController {
     return await this.authService.register(body);
   }
 
-  @UseGuards(BasicAuthGuard)
+  // @UseGuards(BasicAuthGuard)
   // @UseGuards(LocalAuthGuard)
   @HttpCode(200)
   @Post('api/auth/login')
-  async login(@Request() req: AppRequest) {
-    const token = this.authService.login(req.user, 'basic');
+  async login(@Body() body: User) {
+    const token = this.authService.login(body, 'basic');
 
     return token;
   }
