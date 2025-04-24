@@ -9,6 +9,7 @@ import {
   HttpStatus,
   HttpCode,
   BadRequestException,
+  Param,
 } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { BasicAuthGuard } from '../auth';
@@ -117,7 +118,14 @@ export class CartController {
 
   @UseGuards(BasicAuthGuard)
   @Get('order')
-  getOrder(): Promise<OrderEntity[]> {
-    return this.orderService.getAll();
+  getOrder(@Req() req: AppRequest): Promise<OrderEntity[]> {
+    const userId = getUserIdFromRequest(req);
+    return this.orderService.getAll(userId);
+  }
+
+  @UseGuards(BasicAuthGuard)
+  @Delete('order/:id')
+  deleteOrder(@Param('id') id: string): Promise<string> {
+    return this.orderService.deleteOrder(id);
   }
 }
